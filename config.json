@@ -1,5 +1,5 @@
 {
-   "name": "Defects Created After Start of Release",
+   "name": "Defects created during Release",
    "className": "CustomApp",
    "server": "https://rally1.rallydev.com",
    "sdk": "2.0rc3",

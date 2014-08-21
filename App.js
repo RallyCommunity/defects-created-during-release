@@ -20,8 +20,6 @@ Ext.define('CustomApp', {
     _getData: function(release){
         var project = this.getContext().getProject();
         var projectRef = project._ref;
-        this._projectOid = project.ObjectID;
-        console.log(project);
         var releaseStartDate = release.get('ReleaseStartDate');
         var releaseStartDateISO = Rally.util.DateTime.toIsoString(releaseStartDate,true);
         var releaseDate = release.get('ReleaseDate');
@@ -68,7 +66,7 @@ Ext.define('CustomApp', {
     _createGrid: function(myStore){
         var that = this;
    	this._myGrid = Ext.create('Ext.grid.Panel', {
-            title: 'Defects created after the start of Release',
+            title: 'Defects created during Release',
             store: myStore,
             columns: [
                 {text: 'Name', dataIndex: 'Name', flex: 1,
