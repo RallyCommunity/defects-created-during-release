@@ -24,6 +24,8 @@ Ext.define('CustomApp', {
         console.log(project);
         var releaseStartDate = release.get('ReleaseStartDate');
         var releaseStartDateISO = Rally.util.DateTime.toIsoString(releaseStartDate,true);
+        var releaseDate = release.get('ReleaseDate');
+        var releaseDateISO = Rally.util.DateTime.toIsoString(releaseDate,true);
         
         var myStore = Ext.create('Rally.data.wsapi.Store',{
             model: 'Defect',
@@ -34,6 +36,11 @@ Ext.define('CustomApp', {
                         property : 'CreationDate',
                         operator : '>=',
                         value : releaseStartDateISO
+                    },
+                    {
+                        property : 'CreationDate',
+                        operator : '<=',
+                        value : releaseDateISO
                     },
                     {
                         property : 'Project',
