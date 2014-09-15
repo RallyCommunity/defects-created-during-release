@@ -28,7 +28,7 @@ Ext.define('CustomApp', {
         var myStore = Ext.create('Rally.data.wsapi.Store',{
             model: 'Defect',
             autoLoad:true,
-            fetch: ['Name','State','CreationDate'],
+            fetch: ['Name','State','CreationDate','Requirement', 'FormattedID', 'ObjectID', 'Project'],
             filters:[
                     {
                         property : 'CreationDate',
@@ -78,7 +78,19 @@ Ext.define('CustomApp', {
                 }
                 },
                 {text: 'CreationDate', dataIndex: 'CreationDate', flex: 2},
-                {text: 'State', dataIndex: 'State', flex: 2}
+                {text: 'State', dataIndex: 'State', flex: 2},
+                {text: 'Requirement', dataIndex: 'Requirement', flex: 2,
+                    renderer: function(val, meta, record) {
+                        if(record.get('Requirement')){
+                            return '<a href="https://rally1.rallydev.com/#/' + record.get('Requirement').Project.ObjectID + '/detail/userstory/' + record.get('Requirement').ObjectID + '" target="_blank">' + record.get('Requirement').FormattedID + '</a>';
+                        }
+                        else{
+                            return 'None'
+                        }
+                        
+                    }
+                }
+                
             ],
             height: 400
    	});
