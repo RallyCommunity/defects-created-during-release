@@ -65,13 +65,16 @@ Ext.define('CustomApp', {
    
     _createGrid: function(myStore){
         var that = this;
+        that._projectOid = Rally.util.Ref.getOidFromRef(this.getContext().getProject()._ref);
+        console.log(that._projectOid);
    	this._myGrid = Ext.create('Ext.grid.Panel', {
             title: 'Defects created during Release',
             store: myStore,
             columns: [
                 {text: 'Name', dataIndex: 'Name', flex: 1,
                     renderer: function(val, meta, record) {
-                        return '<a href="https://rally1.rallydev.com/#/' + that._projectOid + '/detail/iteration/' + record.get('ObjectID') + '" target="_blank">' + record.get('Name') + '</a>';
+                        console.log(record.get('ObjectID'));
+                        return '<a href="https://rally1.rallydev.com/#/' + that._projectOid + '/detail/defect/' + record.get('ObjectID') + '" target="_blank">' + record.get('Name') + '</a>';
                 }
                 },
                 {text: 'CreationDate', dataIndex: 'CreationDate', flex: 2},
