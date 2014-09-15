@@ -18,18 +18,13 @@ Ext.define('CustomApp', {
     },
     
     _getData: function(release){
-        var project = this.getContext().getProject();
-        var projectRef = project._ref;
+        var projectRef = this.getContext().getProject()._ref;
         var releaseStartDate = release.get('ReleaseStartDate');
         var releaseStartDateISO = Rally.util.DateTime.toIsoString(releaseStartDate,true);
         var releaseDate = release.get('ReleaseDate');
         var releaseDateISO = Rally.util.DateTime.toIsoString(releaseDate,true);
         
-        var myStore = Ext.create('Rally.data.wsapi.Store',{
-            model: 'Defect',
-            autoLoad:true,
-            fetch: ['Name','State','CreationDate','Requirement', 'FormattedID', 'ObjectID', 'Project'],
-            filters:[
+        this._filters = [
                     {
                         property : 'CreationDate',
                         operator : '>=',
@@ -44,22 +39,22 @@ Ext.define('CustomApp', {
                         property : 'Project',
                         value: projectRef
                     }
-            ],
-            listeners: {
-                    load: function(store,records,success){
-                            console.log("loaded %i records", records.length);
-                            this._updateGrid(myStore);
-                    },
-                    scope:this
-            }
-    });
+            ];
+        var myStoreConfig = {
+            model: 'Defect',
+            remoteSort: false,
+            fetch: ['Name','State','CreationDate','Requirement', 'FormattedID', 'ObjectID', 'Project'],
+            filters: this._filters,
+        }
+        this._updateGrid(myStoreConfig);
      },
      _updateGrid: function(myStore){
    	if(this._myGrid === undefined){
    		this._createGrid(myStore);
    	}
-   	else{
-   		this._myGrid.reconfigure(myStore);
+        else{
+	    this._myGrid.store.clearFilter(true);
+	    this._myGrid.store.filter(this._filters);
    	}
    },
    
@@ -67,19 +62,22 @@ Ext.define('CustomApp', {
         var that = this;
         that._projectOid = Rally.util.Ref.getOidFromRef(this.getContext().getProject()._ref);
         console.log(that._projectOid);
-   	this._myGrid = Ext.create('Ext.grid.Panel', {
+   	this._myGrid = Ext.create('Rally.ui.grid.Grid', {
             title: 'Defects created during Release',
-            store: myStore,
-            columns: [
-                {text: 'Name', dataIndex: 'Name', flex: 1,
+            storeConfig: myStore,
+            enableEditing: false,
+            showRowActionsColumn: false,
+            columnCfgs: [
+                {text: 'FormattedID', dataIndex: 'FormattedID'},
+                {text: 'Name', dataIndex: 'Name',
                     renderer: function(val, meta, record) {
                         console.log(record.get('ObjectID'));
                         return '<a href="https://rally1.rallydev.com/#/' + that._projectOid + '/detail/defect/' + record.get('ObjectID') + '" target="_blank">' + record.get('Name') + '</a>';
                 }
                 },
-                {text: 'CreationDate', dataIndex: 'CreationDate', flex: 2},
-                {text: 'State', dataIndex: 'State', flex: 2},
-                {text: 'Requirement', dataIndex: 'Requirement', flex: 2,
+                {text: 'CreationDate', dataIndex: 'CreationDate'},
+                {text: 'State', dataIndex: 'State'},
+                {text: 'Requirement', dataIndex: 'Requirement',
                     renderer: function(val, meta, record) {
                         if(record.get('Requirement')){
                             return '<a href="https://rally1.rallydev.com/#/' + record.get('Requirement').Project.ObjectID + '/detail/userstory/' + record.get('Requirement').ObjectID + '" target="_blank">' + record.get('Requirement').FormattedID + '</a>';
